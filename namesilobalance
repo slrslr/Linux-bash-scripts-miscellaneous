@@ -1,0 +1,24 @@
+#!/bin/sh
+# Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
+# chmod 700 /root/scripts/namesilobalance
+# run the script periodicaly using cron, example line in /etc/cron.d/crons: 0 */6 * * * root /bin/sh /root/scripts/namesilobalance
+# to run every 6 hours
+
+adminmail=you@domain.tld
+
+# Minimum funds balance in dollars (without decimals)
+treshold=60
+
+# Namesilo API key
+apikey=abcdef012345
+
+balance=$(curl -s "https://www.namesilo.com/api/getAccountBalance?version=1&type=xml&key=$apikey" | grep -o -P '(?<=<balance>).*(?=</balance>)' | cut -d '.' -f 1)
+
+if [[ "$balance" -lt "$treshold" ]];then
+echo "Namesilo account balance is under $treshold USD
+Add funds: https://www.namesilo.com/account_funds_add.php
+
+This is script /root/scripts/namesilobalance at $(hostname)" | mail -s "Namesilo, Add funds" $adminmail
+fi
+
+#
