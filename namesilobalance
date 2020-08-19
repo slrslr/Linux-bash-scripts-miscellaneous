@@ -1,7 +1,7 @@
 #!/bin/sh
 # Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
 # chmod 700 /root/scripts/namesilobalance
-# run the script periodicaly using cron, example line in /etc/cron.d/crons: 0 */6 * * * root /bin/sh /root/scripts/namesilobalance
+# run the script periodically using cron, example line in /etc/cron.d/crons: 0 */6 * * * root /bin/sh /root/scripts/namesilobalance
 # to run every 6 hours
 
 adminmail=you@domain.tld
