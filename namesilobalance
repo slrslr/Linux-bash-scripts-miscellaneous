@@ -14,8 +14,9 @@ apikey=abcdef012345
 
 balance=$(curl -s "https://www.namesilo.com/api/getAccountBalance?version=1&type=xml&key=$apikey" | grep -o -P '(?<=<balance>).*(?=</balance>)' | cut -d '.' -f 1)
 
+if [[ -z "$balance" ]];then echo "Balance is null: $balance" && exit;fi
 if [[ "$balance" -lt "$treshold" ]];then
-echo "Namesilo account balance is under $treshold USD
+echo "Namesilo account balance \"$balance\" is under $treshold USD
 Add funds: https://www.namesilo.com/account_funds_add.php
 
 This is script /root/scripts/namesilobalance at $(hostname)" | mail -s "Namesilo, Add funds" $adminmail
