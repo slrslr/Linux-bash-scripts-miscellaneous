@@ -1,0 +1,38 @@
+# Script to help guide user to block/unblock IPv4 address/range on Linux computer with iptables
+
+if [[ "$1" == *"."* ]];then
+echo "Is following looking correct? Enter to confirm or Ctrl+C to exit:"
+whois "$1"|grep -i netname -A 4
+read confirm
+/sbin/iptables --verbose -I FORWARD -s $1 -j DROP;
+service iptables save;
+exit
+else
+echo "Bad input. It should be IPv4."
+fi
+
+echo "IPTables firewall - ban/unban IP, select operation
+--------------------------------------------------
+i = insert IP / ban it
+d = delete IP / unban it
+e = exit"
+read choice
+
+if [ $choice = "i" ];then
+
+echo "Type the IPv4 address/range to ban and hit Enter"
+read ipadd
+echo "Hit enter to confirm or Ctrl+C to cancel:"
+whois "$ipadd"|grep -i netname -A 4
+read confirm
+/sbin/iptables -I FORWARD -s $ipadd -j DROP;
+service iptables save;
+elif [ $choice = "d" ];then
+
+echo "Type the IPv4 address/range to remove from blocklist and hit Enter"
+read ipadd
+/sbin/iptables -D FORWARD -s $ipadd -j DROP;
+service iptables save;
+else
+echo "No changes made in firewall"
+fi
