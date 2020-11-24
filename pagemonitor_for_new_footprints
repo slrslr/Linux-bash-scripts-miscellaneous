@@ -1,0 +1,25 @@
+# Linux bash script that can monitor any webpage for footprints from "footprints" file (located in same directory like this script, one footprint per line),
+# and send an e-mail maximum once per 30 days if not set otherwise if footprint is found on webpage
+
+adminmaill=email@here
+
+urltocheck="https://www.webhostingtalk.com/search.php?do=finduser&userid=189226&contenttype=vBForum_Thread"
+
+# file that will be created/monitored to see when was last report sent to prevent duplicate e-mails
+antidupfile=/tmp/wpmantidup
+
+thisscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+output=$(curl -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36" -L --silent --max-time 10 $urltocheck)
+
+for footprint in $(cat $thisscriptdir/footprints);do
+if [ "$output" == *"$footprint)"* ];then
+# If 0, then file is not there or was not modiffied in last 43200 minutes (30 days) so we send new e-mail
+if [ "$(find $antidupfile -mmin -43200|wc -l)" == "0" ];then
+> $antidupfile
+echo "Footprint found on monitored webpage $urltocheck
+This is script at $(hostname) in $thisscriptdir"|mail -s "Footprint found on monitored URL" -- $adminmaill
+t
+fi
+fi
+done
