@@ -1,0 +1,15 @@
+if [[ "$1" == "" ]];then
+echo "Enter domain name which real non cloudflare IP you want to see:"
+read dn
+else
+dn=$1
+fi
+echo "
+Website IP:
+$(host $dn)"
+
+echo "
+MX/TXT IP (obtained from TXT record): $(host $(dig +short mx $dn|awk '{print $2}')|awk '{print $4}')"
+
+echo "
+Done. IP was returned only in case TXT DNS record contains the IP. Commands used: host \$(dig +short mx $dn|awk '{print \$2}')|awk '{print \$4}'"
