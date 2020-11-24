@@ -1,0 +1,14 @@
+echo "This script will use jpegoptim and optipng software to optimize images in certain directory."
+echo "
+1/2) Enter path where to optimize images:"
+read path
+echo "2/2) Enter cpanel username (is in the path usually):"
+read username
+echo "Hit /"s/" key to start.."
+read start
+if [ "$start" == "s" ];then
+find $path -type f -iname *.jpg -exec jpegoptim -m85 {} \;
+find $path -type f -iname *.png -exec optipng -o2 -preserve {} \; -exec chown $username:$username {} \;
+else
+echo "s key not typed, exitting"
+fi
