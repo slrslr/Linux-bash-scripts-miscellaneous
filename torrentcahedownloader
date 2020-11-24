@@ -1,0 +1,31 @@
+#!/bin/bash
+#set -ex
+
+# Script to download torrent files from torrent caches. Input torrent hash as a parameter of this script
+
+if [ "$1" == "" ];then echo "Please run this script like: scriptname torrenthash" && exit;fi
+hash="$1"
+thisscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+tmpdir="$thisscriptdir/tmp"
+mkdir "$tmpdir" 2>/dev/null
+
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://itorrents.org/torrent/"$hash".torrent
+fi
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://torrage.info/torrent.php?h="$hash"
+fi
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://btcache.me/torrent/"$hash"
+fi
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://torrasave.download/torrent/"$hash".torrent
+fi
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://thetorrent.org/"$hash".torrent
+fi
+if [[ "$(grep -c length "$tmpdir"/"$hash".torrent 2>/dev/null)" == "" ]];then
+wget -O "$tmpdir"/"$hash".torrent --timeout 10 --max-redirect=10 --no-check-certificate http://thetorrent.to/"$hash".torrent
+fi
+
+#find "$tmpdir" -type f -mtime +24 -delete
