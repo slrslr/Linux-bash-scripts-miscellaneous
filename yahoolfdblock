@@ -1,0 +1,16 @@
+#!/bin/bash
+#set -exu
+# This bash script checks the file (in this case /var/log/lfd.log) and report via e-mail it it contains one or more user defined phrases (in this case if Yahoo... hostnames was blocked)
+
+phrases="yahoo|centrum|bitmessage|RT_"
+phrasesexclude="System Integrity"
+maill="mail@here"
+lines=4000
+logentries="$(tail -n $lines /var/log/lfd.log|grep -Ei "$phrases"|grep -Ev "$phrasesexclude")"
+logentryip="$(echo "$logentries"|grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' 2>/dev/null|head -n 1)"
+
+if [[ "$(echo "$logentries"|grep -Eic "$phrases")" != "0" ]];then
+if [[ "$(csf -g "$logentryip")" != *"No matches"* ]];then
+echo -e "$(hostname) /root/scripts/yahoolfdblock found in /var/log/lfd.log one of these phrases: $phrases\\n$(tail -n 4000 /var/log/lfd.log|grep -Ei "$phrases")"|mail -s "$(hostname) CSF banned important IPs?" $maill
+fi
+fi
