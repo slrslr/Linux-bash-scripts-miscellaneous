@@ -16,3 +16,5 @@ Scripts that does not fit other repository of mine
 **namesilobalance** - Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
 
 **optimizeimages** - bash script to optimize images in certain directory reducing size for better performance and disk space savings
+
+**search** - helper bash script for searching Linux computer for files by name, by content or search&replace in certain files content
