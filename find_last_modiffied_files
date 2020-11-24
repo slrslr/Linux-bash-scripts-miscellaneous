@@ -1,0 +1,14 @@
+echo "
+Find last files in user1:
+for i in \$(find /home/user/www -type f -print0 | xargs -0 stat --format '%Y :%y %n' | sort -nr | grep -vE \"cache|error_log|excludephrasse2\" | cut -d: -f2- | head -n 30|awk '{print \$4}');do echo \$i;done
+
+Find files in user2:
+for i in \$(find /home/user2/public_html -type f -print0 | xargs -0 stat --format '%Y :%y %n' | sort -nr | grep -vE \"cache|error_log|excludephrasse2|tmpl_c|adsadmin\" | cut -d: -f2- | head -n 30|awk '{print $4}');do echo \$i;done
+"
+echo ""
+echo "Find files that was latest modiffied. Enter path where to search:"
+read path
+echo "How many lastly modiffied files to display?"
+read files
+find $path -type f -print0 | xargs -0 stat --format '%Y :%y %n' | sort -nr | grep -v cache | grep .php | cut -d: -f2- | head -n $files
+echo "Files with cache in its path wont be displayed, only .php files will be displayed"
