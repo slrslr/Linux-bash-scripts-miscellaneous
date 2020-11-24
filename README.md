@@ -18,3 +18,5 @@ Scripts that does not fit other repository of mine
 **optimizeimages** - bash script to optimize images in certain directory reducing size for better performance and disk space savings
 
 **search** - helper bash script for searching Linux computer for files by name, by content or search&replace in certain files content
+
+**torrentcahedownloader** - Linux bash script that should download .torrent file that match the torrent hash that you input
