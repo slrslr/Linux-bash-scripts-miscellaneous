@@ -11,4 +11,6 @@ Scripts that does not fit other repository of mine
 
 **ftpupload** - this bash script should help guide on how to use linux "ftp" client utility to upload & downlod file
 
+**isipblocked** - search for IP in various log files to discover details about its activity and if is blocked in iptables or in Configserver firewall
+
 **namesilobalance** - Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
