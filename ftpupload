@@ -1,0 +1,39 @@
+echo "
+Guide on how to use FTP to download or upload file
+---------------------------------"
+
+echo "Just use command: ftp hostnamehere
+Then after login do: ls
+then: cd foldername
+then: put /path/to/file
+or: get filenameonftp
+
+OR use following script to be guided to upload a file. To quit, do Ctrl+C"
+
+echo "
+Script to upload File to a FTP
+---------------------------------"
+
+echo "Local file path:"
+read FILE
+echo "Host/IP"
+read HOST
+echo "File path on FTP: (example: images/wallpapers/)"
+read FTPPATH
+echo "Username:"
+read USER
+echo "Password:"
+read PASS
+
+#HOST=MYFTPHOST
+#USER=USERNAME
+#PASS=PASSWORD
+#FTPPATH=FTPPATH
+#FILE=FILEPATH
+
+ftp -inv $HOST << EOF
+  user $USER $PASS
+  cd $FTPPATH
+  put $FILE
+  bye
+EOF
