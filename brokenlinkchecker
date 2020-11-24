@@ -1,0 +1,15 @@
+#!/bin/bash
+# Verify links if they work (return code 200, not 301/302/403)
+
+thisscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+adminmail="admin@mail"
+links="https://www.namecheap.com/legal.aspx
+https://domain.com"
+
+for link in $links;do
+output="$(curl --max-time 5 --silent -I "$link"|head -n 1|tr -d \\r)"
+
+if [[ "$output" == *"200"* || "$output" == *"301"* || "$output" == *"302"* || "$output" == *""* ]];then exit;fi
+if [[ "$output" != *"200"* ]];then echo "$thisscriptdir/BrokenLinkChecker script found \"$link\" to return \"$output\""|mail -s "BrokenLinkChecker" $adminmail;fi
+
+done
