@@ -1,0 +1,23 @@
+#!/bin/bash
+# Monitor nameservers for IP changes and report via e-mail if some nameserve IP changes
+#set -exu
+thisscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+adminmail=mail@here
+
+ns1="ns1.domain.tld"
+ns1ip="1.2.3.4"
+
+ns2="ns2.domain.tld"
+ns2ip="5.6.7.8"
+
+digns1="$(dig +short a $ns1)"
+digns2="$(dig +short a $ns2)"
+
+if [[ "$digns1" == "" || "$digns2" == "" ]];then
+exit
+fi
+
+if [[ "$digns1" != *"$ns1ip"* ]];then echo "$thisscriptdir/monitornsipchange discovered that the $ns1 no longer points to $ns1ip . It points to: $digns1 . Update Cloudflare / DNS zone / registar settings?"|mail -s "NS IP changed" $adminmail;fi
+
+if [[ "$digns2" != *"$ns2ip"* ]];then echo "$thisscriptdir/monitornsipchange discovered that the $ns2 no longer points to $ns2ip . It points to: $digns2 . Update Cloudflare / DNS zone / registar settings?"|mail -s "NS IP changed" $adminmail;fi
+
