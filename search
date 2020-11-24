@@ -1,0 +1,46 @@
+echo "ABOUT: This sript allows searching in file names and content
+---------------------------------------------------------
+1/3 Please select Search Type:
+n - in file names
+c - in files content
+r - search&replace in files content
+"
+
+read method
+
+if [ "$method" == "r" ];then
+
+echo "Edit this command (by default it search and replace only in /root .html sub-files:
+find /root -name '*.html' -type f -print0 | xargs -0 sed -i 's|oldphrasse|newphrasse|g'"
+exit
+
+elif [ "$method" != "n" ] && [ "$method" != "c" ];then
+echo "You need to enter Search type: \"c\" or \"n\". Try again."
+exit
+fi
+
+echo "2/3 Please enter directory path where to search:
+
+    - Examples: / . ./ /home/admin/
+    - Your current directory: $(pwd)
+    - hit Enter for current directory"
+
+read dir
+
+[ "$dir" == "" ] && dir=/root
+
+[ "$method" == "n" ] && echo "find $dir -iname FILENAME
+3/3 Please enter filename to search for:" || echo "find $dir | xargs grep PHRASSE -ls;
+3/3 Please enter phrasse/word to search for:"
+
+read phrasse
+
+if [ "$method" == "n" ];then
+echo "find $dir -iname \"*$phrasse*\""
+find $dir -iname "*$phrasse*"
+
+else
+echo "$dir | xargs grep \"$phrasse\" -ls;"
+find $dir | xargs grep "$phrasse" -ls;
+
+fi
