@@ -9,4 +9,6 @@ Scripts that does not fit other repository of mine
 
 **discoverroughiops** - use "fio" tool to discover rough disk performance - read operations per second and bandwidth used during the reading
 
+**ftpupload** - this bash script should help guide on how to use linux "ftp" client utility to upload & downlod file
+
 **namesilobalance** - Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
