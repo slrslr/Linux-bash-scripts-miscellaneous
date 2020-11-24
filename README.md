@@ -3,6 +3,8 @@ Scripts that does not fit other repository of mine
 
 **banip** - Script to help guide user to block/unblock IPv4 address/range on Linux computer with iptables. "chmod 700 banip" to make it executable.
 
+**brokenlinkchecker** - Script that monitors the defined URLs and report (output or mail) if it returns any non-standard HTTP code like Not found, Forbidden or such
+
 **cloudflare-reverse-IP-hidden-mx** - Discover the IP address of the hosting server where the Cloudflare protected site is really hosted. Not always works.
 
 **connections-list-per-ip-port.sh** - Handy for server admin to discover why the connections number is so high, which are top connection IPs, which top ports, and suggestion on how to block using csf firewall.
