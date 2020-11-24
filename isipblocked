@@ -1,0 +1,31 @@
+#!/bin/bash
+#set -ex
+# search for IP in various log files to discover details about its activity and if is blocked in iptables or in Configserver firewall
+
+echo -e "\nGet log lines from server logs that matching user defined phrase. Use like this ./thisscriptname phrase\n"
+if [[ "$1" == "" ]];then
+echo "Enter phrase to search in logs:";read -r 1
+fi
+
+logs="
+/var/log/lfd.log
+/var/log/messages
+/var/log/secure
+/etc/hosts.deny
+/usr/local/apache/logs/modsec_audit.log
+/usr/local/apache/logs/mod_security.log
+/usr/local/apache/logs/error_log
+/usr/local/cpanel/logs/cphulkd.log"
+
+for log in $logs;do
+#if [[ "$(grep -v -i -l \""$1\"" \""$log\""|tail -n 20)" != "" ]];then
+if [[ "$(grep -il $1 $log)" != "" ]];then
+echo -e "Try: grep \"$1\" \"$log\""
+fi
+echo -e "Finished grepping \"$log\""
+done
+
+if [[ "$(csf -g "$1")" != *"No matches"* ]];then csf -g "$1";else echo -e "\nNot CSF blocked";fi
+if [[ "$(iptables-save --|grep -c \"$1\")" -gt "0" ]];then iptables-save --|grep "$1";else echo "Not in iptables";fi
+
+#
