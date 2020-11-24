@@ -1,0 +1,5 @@
+echo "Find .php files modiffied or created in some data range
+
+"
+now=$(date +"%Y-%m-%d")
+echo "find /home -type f -path /home/virtfs -prune -o -name \"*.php\" -newermt $now ! -newermt $now"
