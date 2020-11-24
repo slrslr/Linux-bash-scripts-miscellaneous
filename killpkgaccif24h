@@ -1,0 +1,10 @@
+#!/bin/bash
+# This script will kill process which running more than X hours
+# egrep: only processes matching set phrasses
+# grep: only processes running more than X hours
+
+PIDS="`ps eaxo bsdtime,pid,comm | egrep "processname1|processname2|processname3" | grep " 30:" | awk '{print $2}'`"
+for pid in ${PIDS}; do { kill -9 $pid; }; done;
+
+#
+# DO NOT WORK, no older than switch of killall - if [[ "$(uname)" = "Linux" ]];then killall -i --older-than 24h pkgacc;fi
