@@ -28,3 +28,5 @@ Scripts that does not fit other repository of mine
 **search** - helper bash script for searching Linux computer for files by name, by content or search&replace in certain files content
 
 **torrentcahedownloader** - Linux bash script that should download .torrent file that match the torrent hash that you input
+
+**yahoolfdblock** - Bash script that checks the defined file if it contains any of the defined phrases and report via e-mail if yes
