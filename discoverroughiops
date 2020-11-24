@@ -1,0 +1,1 @@
+echo "Can take a few seconds..";fio --bs=4k --size=1m --direct=1 --runtime=5 --rw=randread --numjobs=3 --group_reporting --name=1m|grep -i iops;rm -f 1m.*
