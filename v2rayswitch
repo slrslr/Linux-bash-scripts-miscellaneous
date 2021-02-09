@@ -1,0 +1,14 @@
+#!/bin/bash
+# Switch v2ray client to different server
+
+if [[ “$1" == “" ]];then
+echo “serv1 or serv2?"
+read -r srv
+else
+srv="$1"
+fi
+
+if [[ “$srv" == *“serv1"* ]];then sudo cp -f /etc/v2ray/config-serv1.json /etc/v2ray/config.json;fi
+if [[ “$srv" == *“serv2"* ]];then sudo cp -f /etc/v2ray/config-serv2.json /etc/v2ray/config.json;fi
+
+systemctl restart v2ray
