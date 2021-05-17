@@ -17,6 +17,8 @@ Scripts that does not fit other repository of mine
 
 **killpkgaccif24h** - This bash script will kill process which running more than X hours
 
+**mediainfocomparefiles** - Bash script is using already installed "mediainfo" utility to compare files in a directory regarding defined video parameters to help find out differences that cause issues after merging files together
+
 **monitornsipchange** - Monitor nameservers and if its IP change, report it via e-mail
 
 **namesilobalance** - Bash script to discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
