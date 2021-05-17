@@ -1,0 +1,21 @@
+#!/bin/bash
+#set -exu
+exclude="html5ified-dummy.mkv|llc-edl.csv"
+
+echo -e "ABOUT:\nThis bash script is using already installed \"mediainfo\" utility to compare files in a directory regarding defined video parameters\n"
+echo -e "USAGE: scriptname \"DirectoryPathContainingVideoFilesToCompare\"\n"
+
+if [[ "$1" == "" ]]; then exit; fi
+
+while read -r file; do
+mediainfo "$file"|grep -E "Complete name|Width|Height|Sampling rate"
+echo -e "\n"
+done <<< "$(ls -A1 "$1"|grep -Ev "$exclude")"
+
+echo -e "Need to show only files with non standard values? Then use for example grep -v phrase to exclude phrases that are common for most of the files based on the above output."
+
+echo -e "\nMaybe you have found a few files with uncommon values, for example with a bit rate 44.1 kHz where most of the files have 48 kHz?
+If you want to merge all files, maybe you need to upsample all 44 kHz files to 48 kHz, maybe try command like:
+
+read -r -p \"Input video file path/name to convert:\" f && read -r -p \"Input file extension:\" e && ffmpeg -i \"\$f\" -vcodec copy -ar 48000 \"\$f\".48kHz.\"\$e\"
+"
