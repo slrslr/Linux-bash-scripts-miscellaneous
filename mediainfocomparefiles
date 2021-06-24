@@ -8,7 +8,7 @@ echo -e "USAGE: scriptname \"DirectoryPathContainingVideoFilesToCompare\"\n"
 if [[ "$1" == "" ]]; then exit; fi
 
 while read -r file; do
-mediainfo "$file"|grep -E "Complete name|Width|Height|Sampling rate"
+mediainfo "$file"|grep -E "Complete name|Codec ID|Width|Height|Sampling rate|aspect"
 echo -e "\n"
 done <<< "$(ls -A1 "$1"|grep -Ev "$exclude")"
 
