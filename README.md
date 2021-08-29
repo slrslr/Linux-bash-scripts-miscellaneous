@@ -9,6 +9,8 @@ Scripts that does not fit other repository of mine
 
 **connections-list-per-ip-port.sh** - Handy for server admin to discover why the connections number is so high, which are top connection IPs, which top ports, and suggestion on how to block using csf firewall.
 
+**convert2utf** - Linux bash script to help converting directory of files (matching user defined extension) into UTF-8, in case these are not UTF already
+
 **discoverroughiops** - use "fio" tool to discover rough disk performance - read operations per second and bandwidth used during the reading
 
 **ftpupload** - this bash script should help guide on how to use linux "ftp" client utility to upload & downlod file
