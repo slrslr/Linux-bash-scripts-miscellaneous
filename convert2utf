@@ -1,0 +1,15 @@
+#!/bin/bash
+# Linux bash script to convert all directory files matching certain extension to UTF-8 in case they are not already in this encoding
+read -r -p "1/2 What is the extension of the files that should be converted to UTF-8? (for example type .srt, case insensitive)" ext;if [[ "$ext" != *"."* ]]; then echo "Exitting, dot was not used in the extension";exit; fi
+read -r -p "2/2 In which directory the files should be processed (script does NOT descent into sub directories):" dir
+cd "$dir"||exit
+echo -e "\nListing details\n";file ./*"$ext"
+
+tmpfile=/tmp/filestoconvert
+echo -e "Files which will be verified to have UTF encoding:\n";ls -A1 "$dir"|grep -i "$ext" > "$tmpfile";cat "$tmpfile";echo -e "Looking good? Hit Enter, else Ctrl+C";read -r c; if [[ "$c" != "" ]]; then exit; fi
+
+# encoding
+while read -r file; do
+if [[ "$(file "$file")" != *"UTF"* ]]; then recode --verbose ms-ee "$file"; fi
+done <<< "$(cat $tmpfile)"
+cd -
