@@ -1,5 +1,6 @@
 #!/bin/bash
-# Script to limit network interface bandwidth using wondershaper utility (must be installed)
+# Linux bash script to limit network interface bandwidth using wondershaper utility (must be installed)
+# There is one base limit, and possible also 2 different limits in 2 different timeframes.
 # -d is maximum download value in bytes, -u is upload value...
 # Launch periodicaly (10 minutes?) using cron (crontab of the root user!) or manually and it will maintain defined bandwidth limit or change it.
 # sample su "crontab -e" line: */10 * * * * /bin/bash /home/userhere/scripts/bandwidth-limiter-linux 2>&1 /dev/null
