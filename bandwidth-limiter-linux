@@ -1,0 +1,76 @@
+#!/bin/bash
+# Script to limit network interface bandwidth using wondershaper utility (must be installed)
+# -d is maximum download value in bytes, -u is upload value...
+# Launch periodicaly (10 minutes?) using cron (crontab of the root user!) or manually and it will maintain defined bandwidth limit or change it.
+# sample su "crontab -e" line: */10 * * * * /bin/bash /home/userhere/scripts/bandwidth-limiter-linux 2>&1 /dev/null
+# Edit following values to define two timeframes and its bandwidth limits, it will be maintained when ran via cron.
+# To override these limits, run this script with parameter:
+# scriptname bwlup (to increase bandwdith) OR bwldown to decrease. Such override should last maximum 24 hours.
+
+# time frame at which to remove limits, example night to morning: 23:00-7:00:
+t1start="230000"
+t1end="70000"
+# time frame at which to apply most strict limits (in bytes - 35000=3.5MB), example evening: 18:45-21:30:
+t2start="184500"
+t2end="213000"
+strictlimit=35000
+# outside of timeframes will be applied limit (in bytes):
+baselimit=45000
+# custom status file
+overridefile=/tmp/bandwidth-limiter-linux-override
+sudo touch $overridefile && sudo chown "$(whoami)":"$(whoami)" "$overridefile" 2>/dev/null
+override="$(cat "$overridefile")"
+
+currentTime=$(date  +"%H%M%S" | bc)
+nic=$(ip -o -4 route show to default|head -n1|awk '{print $5}')
+#nic=wg0
+# (netinterface you can set manually like =eth0 . Above command should extract main itnerface automatically)
+
+###### Adjust BW limit based on parameter provided to this bash script: ########
+
+# set bandwidth limits in bytes (10000 = ~1 MB/s):
+# -d is download limit
+# -u is upload limit
+
+if [[ "$1" != "" ]];then
+if [[ "$1" == "bwl" ]];then
+sudo wondershaper -c -a "$nic";echo bwl>"$overridefile"
+sudo wondershaper -a "$nic" -d 15000 -u 55000
+#sudo wondershaper -a wlp2s0 -d 2000 -u 2000
+elif [[ "$1" == "bwloff" ]];then
+sudo wondershaper -c -a "$nic";echo bwloff>"$overridefile"
+elif [[ "$1" == "bwlup" ]];then
+sudo wondershaper -c -a "$nic";echo bwlup>"$overridefile"
+sudo wondershaper -a "$nic" -d 25000 -u 58000
+elif [[ "$1" == "bwldown" ]];then
+sudo wondershaper -c -a "$nic";echo bwldown>"$overridefile"
+sudo wondershaper -a "$nic" -d 10000 -u 30000
+fi
+else
+echo -e "Script requires parameter (./thisscriptname parameter) to change bandwidth limit. Parameters:\nbwl (limit bandwidth) or \nbwloff (to remove limits) or\nbwlup (to increase bandwidth a bit) or\nbwldown (to decrease bandwidth limit)"
+fi
+
+######### Adjust BW limit in above defined timeframes: #########
+
+if [[ $currentTime -le $t1start && $currentTime -ge $t1end ]]; # Out of timeframe 1 (night)
+then
+
+if [[ "$(wondershaper -a "$nic" -s|grep -c Mbit)" == "0" ]];then # if unlimited
+sudo -u "$(whoami)" wondershaper -a "$nic" -d "$baselimit" -u "$baselimit" # add base limit
+fi
+
+if [[ $currentTime -ge $t2start && $currentTime -le $t2end ]] && [[ "$override" != "bwlup" ]]; # Within timeframe 2 & user not set override (strict limit)
+then
+sudo -u "$(whoami)" wondershaper -a "$nic" -d "$baselimit" -u "$baselimit" -c # remove base limit
+sudo -u "$(whoami)" wondershaper -a "$nic" -d "$strictlimit" -u "$strictlimit" # add strict limit
+fi
+
+else # Within timeframe 1 (no limit)
+
+cat /dev/null > "$overridefile" # make sure that custom/override limit is reset in this daily period so it not spans multiple days
+
+if [[ "$(wondershaper -a "$nic" -s|grep -c Mbit)" != "0" ]];then # wondershaper limit active
+sudo -u "$(whoami)" wondershaper -a "$nic" -d "$baselimit" -u "$baselimit" -c # remove limit
+fi
+
+fi
