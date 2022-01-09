@@ -13,7 +13,7 @@ treshold=60
 apikey=abcdef012345
 
 webresponse=$(curl -s "https://www.namesilo.com/api/getAccountBalance?version=1&type=xml&key=$apikey")
-balance=$(echo "$webresponse"|grep -o -P '(?<=<balance>).*(?=</balance>)' | cut -d '.' -f 1)
+balance=$(echo "$webresponse"|grep -o -P '(?<=<balance>).*(?=</balance>)' | cut -d '.' -f 1|sed -e 's|,||g')
 
 if [[ -z "$balance" ]];then echo -e "Balance is null. Web response was:\n$webresponse\n\nBalance was:\n$balance" && exit;fi
 if [[ "$balance" -lt "$treshold" ]];then
