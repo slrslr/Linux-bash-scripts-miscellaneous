@@ -18,7 +18,7 @@ fi
 
 # Configure, make install
 read -r -p "Now build? any key to continue" c
-time1="$(date)";./gradlew --scan clean assemble
+time1="$(date)";./gradlew clean assemble
 time2="$(date)";d=unzippeddistrotosetcustommemory;find $d -delete;mkdir $d;cp gui/build/distributions/MuWire-*.zip $d/;cd $d/||exit;unzip ./*.zip;
 #time3="$(date)";sed -i "s/Xmx256M/Xmx1536M/g" MuWire-*/bin/MuWire;echo "Now grep 1024 to verify mem was increased:";grep Xmx1024M MuWire-*/bin/MuWire;
 time4="$(date)";echo "Building start: \"$time1\"";echo "Unzipping start: \"$time2\"";echo "End: \"$time4\"";
