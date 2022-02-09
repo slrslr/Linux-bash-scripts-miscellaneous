@@ -1,0 +1,29 @@
+#!/usr/bin/bash
+# Script to download muwire from .git or update existing, build and offer to run it
+
+giturl="https://github.com/zlatinb/muwire.git"
+dstdir=~/apps/muwire
+processname="muwire" # case insensitive, script will report if app is running
+
+read -r -p "\"$giturl\" has newer version of the \"$processname\" and you want to download and build it? Before continuing, quit \"$processname\". Then hit any key to continue" c
+if [[ "$(>~/p2poff)" -eq 0 ]]; then echo -e "/p2poff was set"; fi # line can be commented out, used for other scripts
+
+# Make sure git is installed
+sudo apt install git -y 2>/dev/null || yum install epel-release -y 2>/dev/null;yum install git 2>/dev/null;sudo pacman -S git -v --no-confirm 2>/dev/null
+
+# Download from github
+if [[ ! -d "$dstdir" ]]; then git clone "$giturl" "$dstdir" && cd "$dstdir"||exit; else
+cd "$dstdir"||exit;git remote add origin "$giturl" 2>/dev/null;git submodule update --init --recursive;git pull origin master 2>/dev/null||git pull origin main 2>/dev/null
+fi
+
+# Configure, make install
+read -r -p "Now build? any key to continue" c
+time1="$(date)";./gradlew --scan clean assemble
+time2="$(date)";d=unzippeddistrotosetcustommemory;find $d -delete;mkdir $d;cp gui/build/distributions/MuWire-*.zip $d/;cd $d/||exit;unzip ./*.zip;
+#time3="$(date)";sed -i "s/Xmx256M/Xmx1536M/g" MuWire-*/bin/MuWire;echo "Now grep 1024 to verify mem was increased:";grep Xmx1024M MuWire-*/bin/MuWire;
+time4="$(date)";echo "Building start: \"$time1\"";echo "Unzipping start: \"$time2\"";echo "End: \"$time4\"";
+
+read -r -p "type y and enter to start \"$processname\" or jsut enter to finish" c2;if [[ "$c2" != "y" ]]; then exit; fi
+lc="$(ls -tA1 $dstdir/$d/|grep MuWire-|grep -v .zip|head -n 1)/bin/MuWire"
+echo "Launch comand: sh \"$lc\"";sh "$lc" &
+# ./gradlew gui:run
