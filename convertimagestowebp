@@ -3,9 +3,9 @@
 # Original files are left in same directory.
 # Requirement: webp package needs to be installed (sudo apt install webp)
 #
-# cwebp parameters:
-# -m compression level
-# -q quality (higher=better)
+# cwebp parameters (see "man cwebp"):
+# -m compression level (0-6)
+# -q quality (%)
 # -mt prefer multithreading
 read -rp "Input path to directory which files (non-recursive) convert to .webp" directory
 files=$(ls -A1 "$directory"|grep -E ".gif|.jpeg|.jpg|.png|.tiff")
