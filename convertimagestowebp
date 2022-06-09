@@ -1,0 +1,12 @@
+#!/bin/bash
+# Script prompt user for a directory to convert containing images (non-recursively) to .webp format saving disk space.
+# Original files are left in same directory.
+# Requirement: webp package needs to be installed (sudo apt install webp)
+#
+# cwebp parameters:
+# -m compression level
+# -q quality (higher=better)
+# -mt prefer multithreading
+read -rp "Input path to directory which files (non-recursive) convert to .webp" directory
+files=$(ls -A1 "$directory"|grep -E ".gif|.jpeg|.jpg|.png|.tiff")
+echo "$files"|while read -r file; do cwebp -mt -m 6 -q 85 "$directory"/"$file" -o "$directory"/"$file.webp"; done
