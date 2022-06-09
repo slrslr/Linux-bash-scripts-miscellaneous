@@ -13,6 +13,8 @@ Linux bash scripts that does not fit other repository of mine
 
 **convert2utf** - Linux bash script to help converting directory of files (matching user defined extension) into UTF-8, in case these are not UTF already
 
+**convertimagestowebp** - Script prompt user for a directory to convert containing images (non-recursively) to .webp format saving disk space.
+
 **discoverroughiops** - use "fio" tool to discover rough disk performance - read operations per second and bandwidth used during the reading
 
 **ftpupload** - this bash script should help guide on how to use linux "ftp" client utility to upload & downlod file
