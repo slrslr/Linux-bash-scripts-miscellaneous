@@ -13,5 +13,5 @@
 # change app names below as you need:
 
 if [ -n "$(pidof thunderbird)" ]; then (wmctrl -c Thunderbird &); else thunderbird & fi >/dev/null 2>&1
-if [ -n "$(pidof session)" ]; then (wmctrl -c Session &); else "$HOME"/apps/session-desktop-linux-x86_64-*.AppImage & fi >/dev/null 2>&1
+if [ -n "$(pidof session-desktop)" ]; then (wmctrl -c Session &); else $HOME/apps/session-desktop-linux-x86_64-*.AppImage & fi >/dev/null 2>&1
 if [ -n "$(pidof dolphin)" ]; then (wmctrl -c Dolphin &); else dolphin & fi >/dev/null 2>&1
