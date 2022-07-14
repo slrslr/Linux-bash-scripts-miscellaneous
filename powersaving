@@ -1,0 +1,17 @@
+#!/bin/bash
+# Run this script to change state of the defined apps. If app is running, it will be stopped. If is not running, it will be started.
+# Example usage case:
+#   24/7 running computer. Some apps eat alot of CPU, so before leaving computer, run command "psm" (power saving mode) to stop these
+#   once you are back, run "psm" again and apps will be started
+#
+# Requirement is to install wmctrl: sudo apt install wmctrl
+#
+# pidof parameter should be lowercase characters, wmctrl first uppercase character
+# To run using example command "psm", make alias using command: alias psm="/bin/bash $HOME/yourscripts/thisscriptname"
+# and paste that alias line/command also into file $HOME/.bashrc
+#
+# change app names below as you need:
+
+if [ -n "$(pidof thunderbird)" ]; then (wmctrl -c Thunderbird &); else thunderbird & fi >/dev/null 2>&1
+if [ -n "$(pidof session)" ]; then (wmctrl -c Session &); else "$HOME"/apps/session-desktop-linux-x86_64-*.AppImage & fi >/dev/null 2>&1
+if [ -n "$(pidof dolphin)" ]; then (wmctrl -c Dolphin &); else dolphin & fi >/dev/null 2>&1
