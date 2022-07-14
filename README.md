@@ -33,6 +33,8 @@ Linux bash scripts that does not fit other repository of mine
 
 **pagemonitor_for_new_footprints** - bash script to monitor one web page and inform via e-mail if it contains new occurrence of the defined phrase/footprint
 
+**powersaving** - Run this script to change state of the defined apps. If app is running, it will be stopped. If is not running, it will be started.
+
 **search** - helper bash script for searching Linux computer for files by name, by content or search&replace in certain files content
 
 **torrentcahedownloader** - Linux bash script that should download .torrent file that match the torrent hash that you input
