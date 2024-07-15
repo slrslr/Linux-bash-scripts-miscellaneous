@@ -1,0 +1,23 @@
+#!/bin/bash
+# Linux bash script to trash electrum app file/s, download new one, verify its signature, set as executable.
+# edit just a "destinationdir" variable which is a few lines below, in order to match your apps directory
+
+name=electrum
+destinationdir="$HOME/apps/" # where app will be downloaded
+signingkey="6694D8DE7BE8EE5631BED9502BD5824B7F9470E6" # obtained from the official docs: https://electrum.readthedocs.io/en/latest/gpg-check.html
+
+read -r -p "To update $name, find out new version number (for example: 4.5.5), quit the $name app, paste the new version number here, hit enter:" ver
+
+# Continue only if Electrum is not running
+while pgrep "$name" >/dev/null; do echo "There is some process with $name in its name, quit it first. Waiting 3 seconds to retry..." && pgrep "$name" -a && sleep 3 && continue; done; echo "$name seems not to be running. Good."
+
+cd "$destinationdir" || exit
+gio trash electrum*.AppImage && echo "Trashed current file/s and downloading new one:"
+wget -c -nv --show-progres "https://download.electrum.org/$ver/$name-$ver-x86_64.AppImage" || exit
+wget -c -nv --show-progres "https://download.electrum.org/$ver/$name-$ver-x86_64.AppImage.asc" || exit
+echo "Downloading finished, this is what we have:"; ls -lh|grep "$name"
+set -o pipefail
+gpg --recv-keys "$signingkey" &>/dev/null && echo -e "Downloadeded official signing key $signingkey"
+gpg --verify "$name"-"$ver"-x86_64.AppImage.asc "$name"-"$ver"-x86_64.AppImage 2>&1 >/dev/null|grep "Good"
+if [ $? = 0 ]; then echo "The signature of the file does not match the signing key $signingkey . You should delete downloaded files (gio trash electrum*)! Exitting now." && exit 1; fi
+rm -f "$name-$ver-x86_64.AppImage.asc";chmod +x "$name-$ver-x86_64.AppImage" && echo "All good. You can run the app."
