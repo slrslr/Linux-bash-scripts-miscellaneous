@@ -43,4 +43,6 @@ Linux bash scripts that does not fit other repository of mine
 
 **updatemuwire** - Linux bash script that helps download new or update existing [Muwire](https://github.com/zlatinb/muwire/) directory and build it so it can be run on Linux (if appropriate Java is installed)
 
+**updateprotonapps.sh** - Linux bash script for 64bit Linux to download and install/update Proton.me applications.
+
 **yahoolfdblock** - Bash script that checks the defined file if it contains any of the defined phrases and report via e-mail if yes
