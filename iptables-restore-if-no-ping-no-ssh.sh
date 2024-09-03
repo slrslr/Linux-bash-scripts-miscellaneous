@@ -10,7 +10,7 @@
 # 4) doublecheck this script file content, set it as executable "chmod +x thisscriptname" and then add a new cronjob "crontab -e" to run minutely: * * * * * /bin/bash /path/to/thisscript.sh
 
 host="127.0.0.1" # hostname to check
-port="22" # hostname port to check if accepts connection
+port="22" # hostname port to check if accepts connection. By default TCP, for UDP, replace zvw by zvuw in a nc command.
 iptphrase="ssh -j ACCEPT" # phrase from a iptables -S output to check if exist
 
 if ! ping -c 1 "$host" &> /dev/null || ! nc -zvw 10 "$host" "$port" &> /dev/null || ! /usr/sbin/iptables-save|grep "$iptphrase" &> /dev/null; then
