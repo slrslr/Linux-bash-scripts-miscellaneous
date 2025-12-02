@@ -48,3 +48,5 @@ Linux bash scripts that does not fit other repository of mine
 **updateprotonapps.sh** - script for 64bit Linux to download and install/update Proton.me apications.
 
 **yahoolfdblock** - checks the defined file if it contains any of the defined phrases and report via e-mail if yes
+
+**Zeronet-Conservancy-Linux-installer.sh** - Install and or update Zeronet-Conservancy [fork](https://www.reddit.com/r/zeronet/comments/s27d34/0net_forks/) of Zeronet on Linux. Zeronet is a P2P webhosting network with reduced centralization and with Tor support. Linux newbie friendly script which allows setting up all dependencies and optionaly a cronjob to keep ZNC running.
