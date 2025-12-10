@@ -10,19 +10,24 @@ do
     case $ITEM in
         "APT")
             sudo apt install git python3-pip python3-venv -y
+            sudo apt-get install cron --no-install-recommends -y
             ;;
         "YUM")
             yum install epel-release -y 2>/dev/null
             yum install git python3 python3-wheel virtualenv -y
+            yum install cronie --setopt=install_weak_deps=False
             ;;
         "DNF")
             sudo dnf install git python3-pip python3-wheel python-virtualenv -y
+            sudo dnf install cronie -y --setopt=install_weak_deps=False
             ;;
         "PACMAN")
             sudo pacman -S git python-pip python3-venv -v --no-confirm
+            sudo pacman -S cronie --noconfirm
             ;;
         "ZYPPER")
             sudo zypper install python3-pip python3-setuptools python3-wheel python3-venv
+            sudo zypper install cronite --no-recommends
             ;;
         "Other/Not needed")
             ;;
@@ -74,6 +79,8 @@ if [[ "$todo" == "i" ]]; then
                 echo ""; read -r -p "Setup a cronjob to start Zeronet in case it is not running? (y/n) " cron
                 if [[ "$cron" == "y" ]]; then
                         echo -e "$(crontab -l 2>/dev/null)\n* * * * * $(whoami) pgrep -if 'eronet\.(py|sh)' || $zndir/zeronet.sh$uiipport --no-migrate &" | crontab - && echo "Cronjob was setup. For modification, run: \"crontab -e\""
+                else
+                        echo "You can uninstall package cron or cronie using your package manager."
                 fi
         fi
 fi
