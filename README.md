@@ -29,6 +29,8 @@ Linux bash scripts that does not fit other repository of mine
 
 **monitornsipchange** - Monitor nameservers and if its IP change, report it via e-mail
 
+**mp3-audio-files-checker-for-corruption-errors.sh** - checks all mp3 audio files in a folder (non-recursively) for errors using ffmpeg and reports which files are problematic and count of errors
+
 **namesilobalance** - discover current funds balance of the Namesilo.com account and report via email if the balance is below the defined treshold
 
 **optimizeimages** - optimize images in certain directory reducing size for better performance and disk space savings
