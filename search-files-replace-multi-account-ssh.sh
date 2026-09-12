@@ -22,39 +22,59 @@ select ITEM in "Search in file names" "Search in files content" "Search&replace 
 do
     case "$ITEM" in
         "Search in file names")
-		echo "find DIR -iname *\"FNAME\"*"
-		echo "find DIR | xargs grep FNAME -ls;"
+#		echo "find DIR -iname *\"FNAME\"*"
+#		echo "find DIR | xargs grep FNAME -ls;"
 		read -r -p "Enter account to search: " user
 		read -r -p "Enter full or partial file name to search for at '$SERVER': " fname && 
 		echo "Searching account '$user' for file names containing '$fname' ..." && ssh "$user"@"$SERVER" -p "$PORT" "find . -iname *\"$fname\"*"
             ;;
         "Search in files content")
-        echo "grep -Rial \"STRING\" DIR # R recursive, i case insensitive, a binary files, l list file names (not content)"
+#        echo "grep -Rial \"STRING\" DIR # R recursive, i case insensitive, a binary files, l list file names (not content)"
 		read -r -p "Enter account to search: " user
 		read -r -p "Enter phrase to search: " phrase
-		echo "Searching account '$user' for files containing '$phrase' ..." && ssh "$user"@"$SERVER" -p "$PORT" "grep -Rial \"$phrase\" ."
+		echo "Searching account '$user' for files containing '$phrase' ..." && ssh "$user"@"$SERVER" -p "$PORT" "grep -Ria \"$phrase\" ."
             ;;
         "Search&replace a string in ONE file content")
-	echo "A) WHOLE LINE REPLACE: sed -i \"s|.*GRUB_TIMEOUT_STYLE=.*|GRUB_TIMEOUT_STYLE=menu|g; s|.*GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|g\" file"
-	echo "B) REPLACE: sed -i \"s|search|replace|g\" file"
-	read -r -p "1/3 B) Which file should be modified? (enter remote full path or absolute: ./public_html/file)" path
-	read -r -p "2/3 B) Which phrase should be searched and replaced? " searched
-	read -r -p "3/3 B) Which phrase should be the replacement? " replacement
+#	echo "A) WHOLE LINE REPLACE: sed -i \"s|.*GRUB_TIMEOUT_STYLE=.*|GRUB_TIMEOUT_STYLE=menu|g; s|.*GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|g\" file"
+#	echo "B) REPLACE: sed -i \"s|search|replace|g\" file"
+	read -r -p "1/4 Which remote user account to search (hit enter to search all): " ua
+	read -r -p "2/4 Which file should be modified? (enter remote full path or absolute: ./public_html/file): " path
+	read -r -p "3/4 Which phrase should be searched and replaced (letter case sensitive)? " searched
+	read -r -p "4/4 Which phrase should be the replacement? " replacement
+	encoded_s=$(printf '%s' "$searched" | base64 -w0)
+	encoded_r=$(printf '%s' "$replacement" | base64 -w0)
 	for user in "${USERS[@]}"; do
+		if [[ "$ua" != "" ]]; then user="$ua"; fi
 		echo "=== $user: ==="
-		ssh "$user"@"$SERVER" -p "$PORT" "cp -p '$path' /dev/shm/" && echo 'Original file has been backed up to remote /dev/shm/' || echo 'Error backing up the file'
-		ssh "$user"@"$SERVER" -p "$PORT" "find '$path' -type f -print0 | xargs -0 sed -e 's/$searched/$replacement/g'"
-		if [[ "$c" != n ]]; then read -r -p "Hit enter to continue with next user account | type \"n\" and hit enter to continue without asking | hit Ctrl+C to cancel the script." c; fi
+		ssh "$user"@"$SERVER" -p "$PORT" "cp -fp '$path' '$path'_backup_$(date --rfc-3339=date)" && echo 'Original file has been backed up to same folder.' || echo 'Error backing up the file'
+		#abs_path=$(ssh "$user"@"$SERVER" -p "$PORT" "readlink -f '$path'")
+		output=$(ssh "$user"@"$SERVER" -p "$PORT" bash -s -- "$encoded_s" "$encoded_r" "$path" <<-'ENDSCRIPT'
+		s=$(echo "$1" | base64 -d)
+		r=$(echo "$2" | base64 -d)
+		c=$(<"$3")
+		n=${c//"$s"/$r}
+		if [ "$n" != "$c" ]; then
+			printf '%s\n' "$n" > "$3"
+			echo "Modified: $3"
+		else
+			echo "No changes in: $3"
+		fi
+		ENDSCRIPT
+		)
+		echo "$output"
+		if [[ "$c" != n ]] && [[ "$ua" == "" ]]; then read -r -p "Hit enter to continue with next user account | type \"n\" and hit enter to continue without asking | hit Ctrl+C to cancel the script." c; fi
+		if [[ "$ua" != "" ]]; then break; fi
 	done
             ;;
         "Search&replace a string in MULTIPLE files content (folder recursively)")
-	read -r -p "1/6 Which remote user account to search (hit enter to search all): " ua && if [[ "$ua" != "" ]]; then user="$ua"; fi
+	read -r -p "1/6 Which remote user account to search (hit enter to search all): " ua
 	read -r -p "2/6 Which file name to search? (For example enter *.html or *): " fname
 	read -r -p "3/6 Which path to search (recursively)? (d0 NOT use variable like \$HOME but rather . for a default remote directory or ./public_html) " path
 	read -r -p "4/6 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACED (multiple lines are OK)" c && kate "$replaced_string_file"
 	read -r -p "5/6 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACEMENT (multiple lines are OK)" c && kate "$replacement_string_file"
 	read -r -p "Hit enter to search and replace" c
 	for user in "${USERS[@]}"; do
+		if [[ "$ua" != "" ]]; then user="$ua"; fi
 		echo "=== $user: ==="
 	# shellcheck disable=SC2087
 	ssh "$user"@"$SERVER" -p "$PORT" bash -s <<-EOF
