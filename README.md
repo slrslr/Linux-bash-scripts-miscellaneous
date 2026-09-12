@@ -41,6 +41,8 @@ Linux bash scripts that does not fit other repository of mine
 
 **search** - helper bash script for searching Linux computer for files by name, by content or search&reace in certain files content
 
+**search-files-replace-multi-account-ssh.sh** - searching and replacing file names and content in multiple remote accounts via SSH. It includes options for searching in file names, searching within file content, and replacing strings in one or multiple files.
+
 **torrentcahedownloader** - download .torrent file that match the torrent hash that you input
 
 **updateelectrumbtc** - trash Electrum (Bitcoin wallet app), download new one, verify its signature, set as executable.
