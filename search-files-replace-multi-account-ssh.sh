@@ -6,7 +6,7 @@ set -euo # -e (exit on error), -u (fail on unset variables), -o pipefail (catch 
 
 SERVER='RemoteSSHAccessibleComputerHostnameOrIPHere'
 PORT='RemoteSSHPortHere'
-c="" # n = no promp to continue before each of users/accounts (it will not ask and run through all accounts)
+c="" # n = disable promp whether to continue to a next users/accounts (it will just continue)
 
 #USERS=(remoteusername)
 USERS=(
@@ -48,17 +48,19 @@ do
 	done
             ;;
         "Search&replace a string in MULTIPLE files content (folder recursively)")
-	read -r -p "1/4 Which file name to search? (For example enter *.html or *) " fname
-	read -r -p "2/4 Which path to search (recursively)? (d0 NOT use variable like \$HOME but rather . for a default remote directory or ./public_html) " path
-	read -r -p "3/4 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACED (multiple lines are OK)" c && kate "$replaced_string_file"
-	read -r -p "4/4 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACEMENT (multiple lines are OK)" c && kate "$replacement_string_file"
+	read -r -p "1/6 Which remote user account to search (hit enter to search all): " ua && if [[ "$ua" != "" ]]; then user="$ua"; fi
+	read -r -p "2/6 Which file name to search? (For example enter *.html or *): " fname
+	read -r -p "3/6 Which path to search (recursively)? (d0 NOT use variable like \$HOME but rather . for a default remote directory or ./public_html) " path
+	read -r -p "4/6 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACED (multiple lines are OK)" c && kate "$replaced_string_file"
+	read -r -p "5/6 Hit enter to open editor and save (Ctrl+S) in it a string to be REPLACEMENT (multiple lines are OK)" c && kate "$replacement_string_file"
+	read -r -p "Hit enter to search and replace" c
 	for user in "${USERS[@]}"; do
 		echo "=== $user: ==="
 	# shellcheck disable=SC2087
 	ssh "$user"@"$SERVER" -p "$PORT" bash -s <<-EOF
 	s=\$(echo $(base64 -w0 "$replaced_string_file") | base64 -d)
 	r=\$(echo $(base64 -w0 "$replacement_string_file") | base64 -d)
-	grep -rlF "\$s" --include='$fname' '$path' > /tmp/hl
+	grep -rlF "\$s" --include='$fname' '$path' 2>/dev/null > /tmp/hl
 	: > /tmp/hm
 	while IFS= read -r f; do
 	stat -c '%a %n' "\${f%/*}" "\$f" >> /tmp/hm
@@ -72,9 +74,9 @@ do
 	fi
 	done < /tmp/hl
 	while read -r m p; do chmod "\$m" "\$p"; done < /tmp/hm
-	rm -f /tmp/{hm,hl}
 	EOF
-		if [[ "$c" != n ]]; then read -r -p "Hit enter to continue with next user account | type \"n\" and hit enter to continue without asking | hit Ctrl+C to cancel the script." c; fi
+		if [[ "$c" != n ]] && [[ "$ua" == "" ]]; then read -r -p "Hit enter to continue with next user account | type \"n\" and hit enter to continue without asking | hit Ctrl+C to cancel the script." c; fi
+		if [[ "$ua" != "" ]]; then break; fi # Task was defined for just one account, no more iterations
 	done
             ;;
         "Exit")
@@ -83,3 +85,5 @@ do
     esac
     break;
 done
+
+rm -f "$replaced_string_file" "$replacement_string_file" /tmp/{hm,hl}
