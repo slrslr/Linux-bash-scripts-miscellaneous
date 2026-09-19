@@ -1,46 +1,56 @@
-echo "ABOUT: This sript allows searching in file names and content
----------------------------------------------------------
-1/3 Please select Search Type:
-n - in file names
-c - in files content
-r - search&replace in files content
-"
+#!/usr/bin/bash
+# Linux bash script to help/assist search (and replace) in file/s
 
-read method
-
-if [ "$method" == "r" ];then
-
-echo "Edit this command (by default it search and replace only in /root .html sub-files:
-find /root -name '*.html' -type f -print0 | xargs -0 sed -i 's|oldphrasse|newphrasse|g'"
-exit
-
-elif [ "$method" != "n" ] && [ "$method" != "c" ];then
-echo "You need to enter Search type: \"c\" or \"n\". Try again."
-exit
-fi
-
-echo "2/3 Please enter directory path where to search:
-
-    - Examples: / . ./ /home/admin/
-    - Your current directory: $(pwd)
-    - hit Enter for current directory"
-
-read dir
-
-[ "$dir" == "" ] && dir=/root
-
-[ "$method" == "n" ] && echo "find $dir -iname FILENAME
-3/3 Please enter filename to search for:" || echo "find $dir | xargs grep PHRASSE -ls;
-3/3 Please enter phrasse/word to search for:"
-
-read phrasse
-
-if [ "$method" == "n" ];then
-echo "find $dir -iname \"*$phrasse*\""
-find $dir -iname "*$phrasse*"
-
-else
-echo "$dir | xargs grep \"$phrasse\" -ls;"
-find $dir | xargs grep "$phrasse" -ls;
-
-fi
+select ITEM in "Search in file names" "Search in files content" "Search&replace a string in one file content" "Search&replace a string in multiple files content (folder recursively)" "Search&replace a multi-line string/code in multiple files content (folder recursively)" "Remote (SSH) search & replace" "Exit"
+do
+    case $ITEM in
+        "Search in file names")
+        echo "find DIR -iname *\"FNAME\"*"
+        echo "find DIR | xargs grep FNAME -ls;"
+            ;;
+        "Search in files content")
+        echo "grep -Rial \"STRING\" DIR # R recursive, i case insensitive, a binary files, l list file names (not content)"
+            ;;
+        "Search&replace a string in one file content")
+        echo "A) WHOLE LINE REPLACE: sed -i \"s|.*GRUB_TIMEOUT_STYLE=.*|GRUB_TIMEOUT_STYLE=menu|g; s|.*GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|g\" file"
+        echo "B) REPLACE: sed -i \"s|search|replace|g\" file"
+        read -r -p "1/3 B) method wizard: Which file should be modified? (enter path)" path
+        read -r -p "2/3 B) method wizard: Which phrase should be searched and replaced? " searched
+        read -r -p "3/3 B) method wizard: Which phrase should be the replacement? " replacement
+        cp -p "$path" /dev/shm/ && echo "Original file has been backed up to /dev/shm/" || echo "Error backing up the file"
+        sed -i "s|$searched|$replacement|g" "$path"
+            ;;
+        "Search&replace a string in multiple files content (folder recursively)")
+        read -r -p "1/4 Which file name to search? (For example enter *.html or *) " fname
+        read -r -p "2/4 Which path to search (recursively)? (do NOT use variable like \$HOME) " path; if [[ "$path" == "." ]]; then echo "Search and replacement will happen inside \"$path\" recursively."; fi
+        read -r -p '3/4 Which phrase should be searched and replaced? ' searched
+        read -r -p '4/4 Which phrase should be the replacement? ' replacement
+        export SEARCHED="$searched"
+        export REPLACEMENT="$replacement"
+        grep -rlF -- "$SEARCHED" "$path" | while IFS= read -r f; do perl -i -0777 -pe 's/\Q$ENV{SEARCHED}\E/$ENV{REPLACEMENT}/g' "$f"; done
+            ;;
+        "Search&replace a multi-line string/code in multiple files content (folder recursively)")
+        read -r -p "1/2 Which directory path files to search recursively: " path
+        read -r -p "2/2 Hit enter to open editor and paste there a multi-line content(code?) that should be replaced by nothing (REMOVED!!!!!). Save the file (Ctrl+S)" ITEM
+        kate /dev/shm/searched.txt & sleep 1
+#       read -r -p "Paste the replacement. To replace with nothing (remove), just hit enter: " replacement
+        read -r -p "Hit enter to begin search and replacement:" ITEM
+        find "$path" -type f -exec perl -0777 -i -pe '
+          BEGIN {
+            local $/;
+            open my $fh, "<", "/dev/shm/searched.txt" or die "Cannot open the file: $!";
+            $p = <$fh>;
+            close $fh;
+          }
+          s/\Q$p\E//g
+        ' {} +
+            ;;
+        "Remote (SSH) search & replace")
+        /bin/bash ~/scripts/search-ssh.sh && exit
+            ;;
+        "Exit")
+        exit
+            ;;
+    esac
+    break;
+done
